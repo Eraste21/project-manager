@@ -1,1 +1,18 @@
+# Bdd SQLite
 *.db
+*.sqlite
+*.sqlite3
+
+# Environnement virtuel
+.venv
+
+# Python
+__Pycache__/
+*.py[cod]
+
+# Variable d'environnement
+.env
+
+# IDE
+.idea/
+.vscode/
