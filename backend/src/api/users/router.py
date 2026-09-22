@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from models.users import UserCreate
+from models.users import UserRegister
 from database.database import get_connection
 
+# par rapport à ici : tags permet de mettre un nom à toutes les routes utilisées par le router dans le Swagger 
 router = APIRouter(prefix="/users", tags=["users"])
 
 # récupérer la liste de tous les utilisateurs
@@ -33,12 +34,12 @@ def get_user(id: int):
 
 # créez un utilisateur
 @router.post("/create")
-def create_user(user: UserCreate):
+def create_user(user: UserRegister):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-        (user.name, user.email, user.password)
+        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+        (user.username, user.email, user.password)
     )
     conn.commit()
     conn.close()
@@ -46,11 +47,11 @@ def create_user(user: UserCreate):
 
 # modifier les informations d'un utilisateur
 @router.patch("/patch/{id}")
-def update_user(id: int, user: UserCreate):
+def update_user(id: int, user: UserRegister):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        'UPDATE users SET name = ?, email = ? WHERE id = ?'
+        'UPDATE users SET username = ?, email = ? WHERE id = ?'
     )
 
 # supprimer un utilisateur
