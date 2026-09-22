@@ -4,6 +4,7 @@ from database.database import get_connection
 
 router = APIRouter(prefix="/users", tags=["users"])
 
+# récupérer la liste de tous les utilisateurs
 @router.get("")
 def get_users():
     conn = get_connection()
@@ -13,6 +14,24 @@ def get_users():
     conn.close()
     return [dict(row) for row in rows]
 
+# récupérer un utilisateur par son id
+@router.get("/{id}")
+def get_user(id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        'SELECT * FROM users WHERE id = ?',
+        (id,)
+    )
+    row = cursor.fetchone()
+    conn.close()
+    
+    if row is None:
+        return {"message": "user not found"} 
+    
+    return dict(row)
+
+# créez un utilisateur
 @router.post("/create")
 def create_user(user: UserCreate):
     conn = get_connection()
@@ -24,3 +43,25 @@ def create_user(user: UserCreate):
     conn.commit()
     conn.close()
     return {"message": "user created successfully"}
+
+# modifier les informations d'un utilisateur
+@router.patch("/patch/{id}")
+def update_user(id: int, user: UserCreate):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE users SET name = ?, email = ? WHERE id = ?'
+    )
+
+# supprimer un utilisateur
+@router.delete("/delete/{id}")
+def delete_user(id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        'DELETE FROM users WHERE id = ?',
+        (id,)
+    )
+    conn.commit()
+    conn.close()
+    return {"message": "user deleted successfully"}
